@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 // MIT License
 //
 // Copyright (c) 2024 Marcel Joachim Kloubert (https://marcel.coffee)
@@ -20,46 +22,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {
-    createServer
-} from "@egomobile/http-server";
-import { setupTestEventListener } from "@egomobile/http-supertest";
-import path from "node:path";
-import packageJSON from "../package.json";
-import TaskRepository from "./repositories/taskRepository";
+import type { IEntityConfig } from "@egomobile/orm";
 
-async function main() {
-    const shouldRunTests = process.env.EGO_RUN_TESTS?.trim() === "1";
-
-    const app = createServer();
-
-    app.controllers({
-        "imports": {
-            "tasks": new TaskRepository()
-        },
-        "patterns": "*.+(ts)",
-        "rootDir": path.join(__dirname, "controllers"),
-        "swagger": {
-            "document": {
-                "info": {
-                    "title": packageJSON.name,
-                    "version": packageJSON.version
-                }
-            },
-            "resourcePath": __dirname
-        },
-        "validateWithDocumentation": false
-    });
-
-    if (shouldRunTests) {
-        setupTestEventListener({
-            "server": app
-        });
-    }
-
-    // start the server
-    await app.listen(process.env.PORT);
-    console.log("App now running on port", app.port);
+// TABLE: tasks
+export class Task {
+    public id: number = undefined!;
+    public status: "new" | "done" = undefined!;
+    public time: Date = undefined!;
+    public title: string = undefined!;
+    public uuid: string = undefined!;
 }
 
-main().catch(console.error);
+const entity: IEntityConfig = {
+    "ids": ["id"],
+    "type": Task
+};
+
+export default entity;

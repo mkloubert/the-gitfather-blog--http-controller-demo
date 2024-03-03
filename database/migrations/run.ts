@@ -21,45 +21,35 @@
 // SOFTWARE.
 
 import {
-    createServer
-} from "@egomobile/http-server";
-import { setupTestEventListener } from "@egomobile/http-supertest";
+    PostgreSQLMigrationContext
+} from "@egomobile/orm-pg";
+import dayJS from "dayjs";
 import path from "node:path";
-import packageJSON from "../package.json";
-import TaskRepository from "./repositories/taskRepository";
 
 async function main() {
-    const shouldRunTests = process.env.EGO_RUN_TESTS?.trim() === "1";
+    const migrationContext = new PostgreSQLMigrationContext({
+        "debug": (message, icon, source) => {
+            const now = dayJS();
 
-    const app = createServer();
+            let logger: ((...args: any[]) => any) | null = null;
 
-    app.controllers({
-        "imports": {
-            "tasks": new TaskRepository()
+            if (icon === "ℹ️" || icon === "✅") {
+                logger = console.info;
+            }
+            else if (icon === "❌") {
+                logger = console.error;
+            }
+            else if (icon === "⚠️") {
+                logger = console.warn;
+            }
+
+            logger?.(`[${now.format("HH:mm:ss")}]`, icon, message);
         },
-        "patterns": "*.+(ts)",
-        "rootDir": path.join(__dirname, "controllers"),
-        "swagger": {
-            "document": {
-                "info": {
-                    "title": packageJSON.name,
-                    "version": packageJSON.version
-                }
-            },
-            "resourcePath": __dirname
-        },
-        "validateWithDocumentation": false
+        "migrations": path.join(__dirname, "scripts"),
+        "typescript": true
     });
 
-    if (shouldRunTests) {
-        setupTestEventListener({
-            "server": app
-        });
-    }
-
-    // start the server
-    await app.listen(process.env.PORT);
-    console.log("App now running on port", app.port);
+    await migrationContext.up();
 }
 
 main().catch(console.error);

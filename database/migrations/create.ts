@@ -21,45 +21,25 @@
 // SOFTWARE.
 
 import {
-    createServer
-} from "@egomobile/http-server";
-import { setupTestEventListener } from "@egomobile/http-supertest";
+    createNewMigrationFile
+} from "@egomobile/orm-pg";
 import path from "node:path";
-import packageJSON from "../package.json";
-import TaskRepository from "./repositories/taskRepository";
 
 async function main() {
-    const shouldRunTests = process.env.EGO_RUN_TESTS?.trim() === "1";
-
-    const app = createServer();
-
-    app.controllers({
-        "imports": {
-            "tasks": new TaskRepository()
-        },
-        "patterns": "*.+(ts)",
-        "rootDir": path.join(__dirname, "controllers"),
-        "swagger": {
-            "document": {
-                "info": {
-                    "title": packageJSON.name,
-                    "version": packageJSON.version
-                }
-            },
-            "resourcePath": __dirname
-        },
-        "validateWithDocumentation": false
-    });
-
-    if (shouldRunTests) {
-        setupTestEventListener({
-            "server": app
-        });
+    const migrationName = process.argv[2]?.trim();
+    if (!migrationName) {
+        return;
     }
 
-    // start the server
-    await app.listen(process.env.PORT);
-    console.log("App now running on port", app.port);
+    await createNewMigrationFile(migrationName, {
+        "dir": path.join(__dirname, "scripts"),
+        "typescript": true,
+
+        "header": `/* eslint-disable unicorn/filename-case */
+/* eslint-disable jsdoc/require-param */
+
+`
+    });
 }
 
 main().catch(console.error);

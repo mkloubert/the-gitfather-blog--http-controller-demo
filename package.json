@@ -7,7 +7,13 @@
     "node": ">= 18.0.0"
   },
   "scripts": {
-    "start": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.test.ts' --ignore 'src/test/**/*.ts' --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts"
+    "lint": "eslint -c .eslintrc.js --ext .ts src",
+    "lint:fix": "eslint --fix -c .eslintrc.js --ext .ts src",
+    "migration:create": "ts-node ./database/migrations/create.ts",
+    "migration:run": "ts-node ./database/migrations/run.ts",
+    "start": "npm run migration:run && nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.test.ts' --ignore 'src/test/**/*.ts' --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts",
+    "test": "EGO_RUN_TESTS=1 ts-node src/index.ts",
+    "test:docker": "docker exec the-gitfather-blog--http-controller-demo-api-1 npm run test"
   },
   "keywords": [],
   "author": "",
@@ -18,14 +24,18 @@
   "dependencies": {
     "@egomobile/api-utils": "7.0.0",
     "@egomobile/http-server": "0.67.0",
+    "@egomobile/http-supertest": "0.7.1",
     "@egomobile/orm": "0.15.5",
     "@egomobile/orm-pg": "0.22.1",
     "@egomobile/tsconfig": "5.0.0",
     "@types/pg": "8.11.2",
+    "@types/supertest": "6.0.2",
+    "dayjs": "1.11.10",
     "eslint": "8.57.0",
     "eslint-config-ego": "0.19.0",
     "nodemon": "3.1.0",
     "pg": "8.11.3",
+    "supertest": "6.3.4",
     "ts-node": "10.9.2",
     "typescript": "5.3.3"
   }

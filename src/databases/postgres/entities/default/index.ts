@@ -20,46 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {
-    createServer
-} from "@egomobile/http-server";
-import { setupTestEventListener } from "@egomobile/http-supertest";
-import path from "node:path";
-import packageJSON from "../package.json";
-import TaskRepository from "./repositories/taskRepository";
+import type { EntityConfigurations } from "@egomobile/orm";
 
-async function main() {
-    const shouldRunTests = process.env.EGO_RUN_TESTS?.trim() === "1";
+// entity configurations we will later export as
+// `EntityConfigurations`
+import TaskEntity from "./tasks";
 
-    const app = createServer();
+// export classes, so that they can be later
+// imported from this script directly
+export { Task } from "./tasks";
 
-    app.controllers({
-        "imports": {
-            "tasks": new TaskRepository()
-        },
-        "patterns": "*.+(ts)",
-        "rootDir": path.join(__dirname, "controllers"),
-        "swagger": {
-            "document": {
-                "info": {
-                    "title": packageJSON.name,
-                    "version": packageJSON.version
-                }
-            },
-            "resourcePath": __dirname
-        },
-        "validateWithDocumentation": false
-    });
-
-    if (shouldRunTests) {
-        setupTestEventListener({
-            "server": app
-        });
-    }
-
-    // start the server
-    await app.listen(process.env.PORT);
-    console.log("App now running on port", app.port);
-}
-
-main().catch(console.error);
+// export all *Entity configurations
+// as `default` getter
+export default (): EntityConfigurations => {
+    return {
+        "tasks": TaskEntity
+    };
+};

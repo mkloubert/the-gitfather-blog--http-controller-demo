@@ -21,45 +21,41 @@
 // SOFTWARE.
 
 import {
-    createServer
-} from "@egomobile/http-server";
-import { setupTestEventListener } from "@egomobile/http-supertest";
-import path from "node:path";
-import packageJSON from "../package.json";
-import TaskRepository from "./repositories/taskRepository";
+    createWithPostgres,
+    registerBigIntAsNumber
+} from "@egomobile/orm-pg";
+import pg from "pg";
 
-async function main() {
-    const shouldRunTests = process.env.EGO_RUN_TESTS?.trim() === "1";
+// bigint e.g. is returned as string, so we can keep sure to have a number here
+registerBigIntAsNumber({
+    "pgModule": pg
+});
 
-    const app = createServer();
+// in this folder we organize the POCOs
+import getDefaultEntityConfiguration from "./entities/default";
 
-    app.controllers({
-        "imports": {
-            "tasks": new TaskRepository()
+// `createWithPostgres` is a factory function that creates
+// a new PostgreSQL connection with specific configuration
+// organized by connection names
+export const withPostgres = createWithPostgres({
+    "default": {
+        "client": () => {
+            // this is the default and lets
+            // `pg` module load the connection settings from
+            // following environment variables:
+            //
+            // - PGDATABASE
+            // - PGHOST
+            // - PGPASSWORD
+            // - PGPORT
+            // - PGSSLMODE
+            // - PGUSER
+            // - PORT
+
+            return {};
         },
-        "patterns": "*.+(ts)",
-        "rootDir": path.join(__dirname, "controllers"),
-        "swagger": {
-            "document": {
-                "info": {
-                    "title": packageJSON.name,
-                    "version": packageJSON.version
-                }
-            },
-            "resourcePath": __dirname
-        },
-        "validateWithDocumentation": false
-    });
-
-    if (shouldRunTests) {
-        setupTestEventListener({
-            "server": app
-        });
+        "clientClass": pg.Client,
+        "entities": getDefaultEntityConfiguration,
+        "noDbNull": true
     }
-
-    // start the server
-    await app.listen(process.env.PORT);
-    console.log("App now running on port", app.port);
-}
-
-main().catch(console.error);
+});
