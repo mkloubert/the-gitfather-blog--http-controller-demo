@@ -1,0 +1,32 @@
+{
+  "name": "the-gitfather-blog--http-controller-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "scripts": {
+    "start": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.test.ts' --ignore 'src/test/**/*.ts' --exec node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "url": "https://github.com/mkloubert/the-gitfather-blog--http-controller-demo.git"
+  },
+  "dependencies": {
+    "@egomobile/api-utils": "7.0.0",
+    "@egomobile/http-server": "0.67.0",
+    "@egomobile/orm": "0.15.5",
+    "@egomobile/orm-pg": "0.22.1",
+    "@egomobile/tsconfig": "5.0.0",
+    "@types/pg": "8.11.2",
+    "eslint": "8.57.0",
+    "eslint-config-ego": "0.19.0",
+    "nodemon": "3.1.0",
+    "pg": "8.11.3",
+    "ts-node": "10.9.2",
+    "typescript": "5.3.3"
+  }
+}
