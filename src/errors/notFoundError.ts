@@ -20,28 +20,5 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {
-    createNewMigrationFile
-} from "@egomobile/orm-pg";
-import path from "node:path";
-
-async function main() {
-    const migrationName = process.argv[2]?.trim();
-    if (!migrationName) {
-        console.error("Please define the name of the migration!");
-
-        process.exit(2);
-    }
-
-    await createNewMigrationFile(migrationName, {
-        "dir": path.join(__dirname, "scripts"),
-        "typescript": true,
-
-        "header": `/* eslint-disable unicorn/filename-case */
-/* eslint-disable jsdoc/require-param */
-
-`
-    });
+export class NotFoundError extends Error {
 }
-
-main().catch(console.error);

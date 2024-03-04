@@ -26,10 +26,11 @@ import type { IEntityConfig } from "@egomobile/orm";
 
 // TABLE: tasks
 export class Task {
+    public created_at: Date = undefined!;
     public id: number = undefined!;
     public status: "new" | "done" = undefined!;
-    public time: Date = undefined!;
     public title: string = undefined!;
+    public updated_at: Date | null = undefined!;
     public uuid: string = undefined!;
 }
 

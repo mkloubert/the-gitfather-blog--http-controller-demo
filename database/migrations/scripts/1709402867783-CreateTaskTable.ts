@@ -41,7 +41,8 @@ CREATE TABLE public.${taskTable}
     "id" bigserial NOT NULL,
     "uuid" uuid DEFAULT uuid_in(md5(random()::text || random()::text)::cstring) NOT NULL,
     "title" character varying(255) NOT NULL,
-    "time" timestamp with time zone DEFAULT now() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT now() NOT NULL,
+    "updated_at" timestamp with time zone,
     "status" character varying(255) NOT NULL
 )
 WITH (
